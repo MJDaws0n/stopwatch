@@ -1,4 +1,0 @@
-module bugtest;
-
-import lib/std;
-import lib/file_io;
