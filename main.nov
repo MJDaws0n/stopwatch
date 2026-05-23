@@ -1,0 +1,60 @@
+module stopwatch;
+
+import lib/std;
+import lib/file_io;
+
+fn main(argc: i32, argv: u64) -> i32 {
+	if (argc > 1) {
+		let arg1: str = argv_get(argv, 1);
+		if (arg1 == 'start'){
+			print('Starting timer...');
+			setTime();
+		} else	
+		if (arg1 == 'stop'){
+			print('Stopping timer...');
+			print(ns_to_decimal_second(getTime()) + 's');
+		} else{
+			print('Usage: stopwatch [start / stop]');
+		}
+	} else{
+		print('Usage: stopwatch [start / stop]');	
+	}
+	exit(0);
+	return 0;
+}
+
+fn setTime() -> void{
+	let ns: i64 = get_time_ns();
+	let path: str = "/tmp/novus_timer.txt";
+
+	if (write_file(path, int_to_str(ns)) != 0) {
+		print('An error occured');
+		exit(1);
+	}
+}
+
+
+fn getTime() -> i64 {
+	let path: str = "/tmp/novus_timer.txt";
+
+	let start: i64 = str_to_i64(read_file(path));
+	let now: i64 = get_time_ns();
+	
+	let elapsed_ns: i64 = now - start;
+
+	return elapsed_ns;
+}
+
+
+fn ns_to_decimal_second(time: i64) -> str {
+	let ns_string: str = i64_to_str(time);
+	let before: str = substr_len(ns_string, 0, len(ns_string) - 9);
+
+	if (before == ''){
+		before = '0';
+	}
+
+	let after: str = substr(ns_string, len(ns_string) - 9);
+
+	return before + '.' + after;
+}
